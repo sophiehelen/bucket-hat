@@ -1,0 +1,291 @@
+/*
+Computational Design!
+Find instructions to completing your own bucket hat at http://tinyurl.com/MakeABucketHat
+
+Title: Customized Bucket Hat
+Imagined, Designed, and Programmed by: Sophie Schneider
+Date: October 17th, 2014
+ 
+Description: < This program allows you to create your own customized bucket hat pattern that you are able to export as a PDF and cut out on the laser cutter!
+Production instructions found at: http://tinyurl.com/MakeABucketHat >
+ 
+Sources of ideas and inspiration:
+ * Becca Rose Glowacki's pompom makers, which can be found at the following URL: https://gist.github.com/nataliefreed/7a4169138895e00d1a68
+ * Natalie Freed's Cursor Loaction, which can be found at the following URL: https://gist.github.com/nataliefreed/5532ba695e62c0a550be
+ * Melanie Falick's Bucket Hat Program, which can be found at the following URL: http://www.melaniefalickbooks.com/storage/STCCraft_OliverS_BucketHatPattern_.pdf
+ 
+Includes code from:
+ * Code to customize sliders and buttons comes from the Spirogator program: https://github.com/nataliefreed/spirogator
+ * Natalie Freed's Bezier Curve Code Generator: https://gist.github.com/nataliefreed/acd1260d0a899174094c
+ * Becca Rose Glowacki's pompom makers: https://gist.github.com/nataliefreed/7a4169138895e00d1a68
+ 
+*/
+
+import controlP5.*;
+import processing.pdf.*;
+
+ControlP5 cp5;
+PGraphics layer;
+
+PFont font;
+PFont font2;
+
+float angle = 0.0;
+float length = 0;
+float radius = 0;
+float radius2 = 0;
+boolean showCircle = false;
+boolean showRectangle = false;
+boolean showLine = false;
+
+void setup()
+{ 
+  size (1400, 800);
+  cp5 = new ControlP5(this);
+  background(255);
+  addShapeButtons();
+  addExportButton();
+  addRefreshButton();
+
+  layer = createGraphics(1400, 800);
+
+  // font = bucket hat! // font2 = customize your own
+  font = loadFont( "Futura-CondensedExtraBold-250.vlw" ); 
+  font2 = loadFont( "Futura-MediumItalic-50.vlw");
+}
+
+void draw()
+{
+  background(255);
+  if (showCircle)
+  {
+    generateCircle();
+  }
+  if (showRectangle)
+  {
+    generateRectangle();
+  }
+  if (showLine)
+  {
+    generateLine();
+  }
+
+  noFill();
+  drawPattern();
+
+  textFont(font, 100);
+  fill(#036DFF);        
+  text ( "bucket hat!", 175, 775); 
+
+  textFont(font2, 45);
+  fill(#0AC8FF);  
+  text ("customize your own", 25, 675);
+}
+
+// generative circle code (enlarging circle)
+void generateCircle()
+{
+  if (mousePressed == true) {
+    layer.beginDraw();
+    layer.stroke(0);
+    layer.fill(0);
+    layer.ellipse(mouseX, mouseY, radius, radius);
+    radius++;
+  }
+  layer.endDraw();
+  image(layer, 0, 0);
+
+  if (mousePressed == false) {
+    radius = 0;
+  }
+}
+
+//generative square code (enlarging square)
+void generateRectangle()
+{
+
+  if (mousePressed == true) {
+    rectMode(CENTER);
+    layer.beginDraw();
+    layer.stroke(0);
+    layer.fill(0);
+    layer.rect(mouseX, mouseY, length, length);
+    length++;
+  }
+  layer.endDraw();
+  image(layer, 0, 0);
+
+  if (mousePressed == false) {
+    length = 0;
+  }
+}
+
+//generative line code (free draw line)
+void generateLine()
+{
+  {
+    if (mousePressed == true) {
+      layer.beginDraw();
+      smooth();
+      layer.stroke(0);
+      layer.fill(0);
+      layer.strokeWeight(5);
+      layer.line(pmouseX, pmouseY, mouseX, mouseY); //Connect previous to current
+    }  
+    layer.endDraw();
+    image(layer, 0, 0);
+
+    if (mousePressed == false) {
+      radius = 0;
+    }
+  }
+}
+
+// adding buttons
+
+void circleButton()
+{
+  showCircle = true;
+  showRectangle = false;
+  showLine = false;
+}
+
+void rectangleButton()
+{
+  showCircle = false;
+  showRectangle = true;
+  showLine = false;
+}
+
+void lineButton()
+{
+  showCircle = false;
+  showRectangle = false;
+  showLine = true;
+}
+
+void refreshButton()
+{
+  showCircle = false;
+  showRectangle = false;
+  showLine = false;
+  fill(0);
+  layer = createGraphics(1400, 800);
+}
+
+// description of visual elements of buttons
+
+void addShapeButtons()
+{
+
+  cp5.addButton("circleButton")
+    .setBroadcast(false)
+      .setColorBackground(#935CFC)
+        .setPosition(1215, 100)
+          .setSize(150, 50)
+            .setLabel("Circles")
+              .setBroadcast(true)
+                .getCaptionLabel().setFont(createFont("futura", 20)).toUpperCase(false).align(CENTER, CENTER)
+                  ;
+
+  cp5.addButton("rectangleButton")
+    .setBroadcast(false)
+      .setColorBackground(#935CFC)
+        .setPosition(1215, 200)
+          .setSize(150, 50)
+            .setLabel("Rectangles")
+              .setBroadcast(true)
+                .getCaptionLabel().setFont(createFont("futura", 20)).toUpperCase(false).align(CENTER, CENTER)
+                  ;
+
+  cp5.addButton("lineButton")
+    .setBroadcast(false)
+      .setColorBackground(#935CFC)
+        .setPosition(1215, 300)
+          .setSize(150, 50)
+            .setLabel("Line")
+              .setBroadcast(true)
+                .getCaptionLabel().setFont(createFont("futura", 20 )).toUpperCase(false).align(CENTER, CENTER)
+                  ;
+} 
+
+void addRefreshButton()
+{
+  cp5.addButton("refreshButton")
+    .setBroadcast(false)
+      .setColorBackground(#EF62FF)
+        .setPosition(1215, 500)
+          .setSize(150, 50)
+            .setLabel("Refresh")
+              .setBroadcast(true)
+                .getCaptionLabel().setFont(createFont("futura", 20)).toUpperCase(false).align(CENTER, CENTER)
+                  ;
+}
+
+// all export button code
+
+void exportButton()
+{
+  beginRecord(PDF, "BucketHat.pdf");
+  image(layer, 0, 0);
+  noFill();
+  drawPattern();
+
+  endRecord();
+}
+
+void addExportButton()
+{
+  cp5.addButton("exportButton")
+    .setBroadcast(false)
+      .setColorBackground(#EF62FF)
+        .setPosition(1215, 575)
+          .setSize(150, 50)
+            .setLabel("Export")
+              .setBroadcast(true)
+                .getCaptionLabel().setFont(createFont("futura", 20)).toUpperCase(false).align(CENTER, CENTER)
+                  ;
+}
+
+// drawing pattern (bezier + lines)
+
+void drawPattern()
+{
+  strokeWeight(1);
+  stroke (#629FFF);
+  bezier(109, 638, 105, 600, 19, 381, 110, 76);
+  bezier(281, 582, 206, 334, 277, 163, 281, 124); 
+  bezier(311, 633, 231, 345, 293, 133, 311, 71);
+  bezier(484, 585, 420, 369, 461, 205, 483, 122);
+  bezier(705, 703, 379, 523, 410, 172, 707, 16); 
+  bezier(779, 552, 549, 415, 636, 241, 782, 167);
+  bezier(952, 708, 1319, 506, 1214, 151, 951, 21);
+  bezier(877, 558, 1111, 433, 1020, 236, 876, 174); 
+  bezier(830, 535, 602, 517, 650, 184, 830, 193); 
+  bezier(830, 535, 1050, 513, 1016, 198, 830, 193);
+
+  fill(0);
+  line(109, 638, 281, 582);
+  line(110, 76, 281, 124);
+  line(311, 633, 484, 585);
+  line(311, 71, 483, 122);
+  line(705, 703, 779, 552);
+  line(707, 16, 782, 167);
+  line(877, 558, 952, 708);
+  line(876, 174, 951, 21);
+
+  //notches
+stroke(#D1E1FA);
+  line(68, 355, 88, 355);
+  line(226, 355, 246, 355);
+  line(272, 355, 292, 355);
+  line(430, 360, 450, 360);
+  line(473, 360, 493, 360);
+  line(618, 360, 638, 360);
+  line(678, 365, 698, 365);
+  line(963, 365, 983, 365);
+  line(1020, 365, 1040, 365);
+  line(1170, 365, 1190, 365);
+  line(830, 193, 830, 213);
+  line(830, 515, 830, 535);
+}
